@@ -39,6 +39,10 @@ if module == "lesson_prep":
     from tools import lesson_prep
 
     lesson_prep.render()
+elif module == "essay_grader":
+    from tools import essay_grader
+
+    essay_grader.render()
 else:
     st.markdown(f"# {choice}")
-    st.info("Bu araç sırada. Ders Hazırlığı şu anda kullanılabilir.")
+    st.info("Bu araç sırada.")
