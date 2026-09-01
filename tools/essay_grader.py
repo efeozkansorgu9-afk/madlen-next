@@ -8,6 +8,8 @@ Değerlendirme ayrıca tek bir öğrenme güçlüğü adlandırır. Öğretmen b
 bağlamına aktarabilir; Ders Hazırlığı bir sonraki planı o güçlükle açar.
 """
 
+import html
+
 import streamlit as st
 
 from llm import ModelError, generate_json
@@ -114,6 +116,7 @@ Kurallar:
                 return
 
         st.session_state["eg_result"] = result
+        st.session_state["eg_source"] = text
 
     result = st.session_state.get("eg_result")
     if not result:
@@ -146,10 +149,28 @@ Kurallar:
     left, right = st.columns([3, 2])
 
     with left:
+        inline = result.get("inline", [])
+        source = st.session_state.get("eg_source", "")
+
+        if source:
+            marked, found = _highlight(source, [i.get("quote", "") for i in inline])
+            st.markdown("#### Öğrencinin metni")
+            st.markdown(
+                f'<div class="m-card m-essay">{marked}</div>',
+                unsafe_allow_html=True,
+            )
+            if found < len(inline):
+                st.caption(
+                    "Bazı alıntılar metinde birebir bulunamadı; "
+                    "aşağıda ayrıca listelendi."
+                )
+
         st.markdown("#### Metin üzerinden geri bildirim")
-        for item in result.get("inline", []):
+        for i, item in enumerate(inline, start=1):
             st.markdown(
                 f'<div class="m-slide">'
+                f'<div class="m-hl-n" style="position:static;display:inline-block;'
+                f'margin-bottom:0.4rem">{i}</div>'
                 f'<div style="font-style:italic;color:#5C5149;margin-bottom:0.5rem">'
                 f'"{item.get("quote", "")}"</div>'
                 f'<div style="font-size:0.93rem">{item.get("note", "")}</div>'
@@ -187,3 +208,31 @@ Kurallar:
         if st.button("Ders hazırlığına aktar"):
             st.session_state["class_gap"] = gap
             st.success("Sınıf bağlamına eklendi. Ders Hazırlığı sayfasında görünecek.")
+
+
+def _highlight(text, quotes):
+    """
+    Öğrencinin metnini, geri bildirim alıntıları işaretlenmiş halde döndürür.
+
+    Model alıntıyı birebir vermeyi başaramazsa o alıntı sessizce atlanır;
+    metin yine bütün olarak gösterilir. Yer tutucu kullanılıyor çünkü eklenen
+    HTML, sonraki aramaların içine düşebilir.
+    """
+    esc = html.escape(text)
+    marks = {}
+
+    for i, q in enumerate(quotes, start=1):
+        needle = html.escape((q or "").strip().strip('"“”'))
+        if not needle or needle not in esc:
+            continue
+        token = f"@@MARK{i}@@"
+        esc = esc.replace(needle, token, 1)
+        marks[token] = (
+            f'<mark class="m-hl">{needle}'
+            f'<span class="m-hl-n">{i}</span></mark>'
+        )
+
+    for token, markup in marks.items():
+        esc = esc.replace(token, markup)
+
+    return esc.replace("\n", "<br>"), len(marks)

@@ -135,6 +135,37 @@ section[data-testid="stSidebar"] {
   border-color: var(--line) !important;
 }
 
+.m-essay {
+  line-height: 1.75;
+  font-size: 0.95rem;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+mark.m-hl {
+  background: #FBE7CD;
+  color: var(--ink);
+  padding: 0.08em 0.18em;
+  border-radius: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.m-hl-n {
+  display: inline-block;
+  min-width: 1.15em;
+  height: 1.15em;
+  line-height: 1.15em;
+  text-align: center;
+  background: var(--orange);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 600;
+  margin-left: 0.3em;
+  vertical-align: super;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
