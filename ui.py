@@ -145,7 +145,7 @@ section[data-testid="stSidebar"] {
 def setup(title):
     st.set_page_config(
         page_title=f"{title} · Madlen Next",
-        page_icon="◉",
+        page_icon="📘",
         layout="wide",
         initial_sidebar_state="expanded",
     )

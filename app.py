@@ -13,7 +13,7 @@ import ui
 PAGES = {
     "Ders Hazırlığı": "lesson_prep",
     "Öğrenci Asistanı": "chatbot",
-    "Kompozisyon Değerlendirme": "essay_grader",
+    "Değerlendirme": "essay_grader",
 }
 
 ui.setup("Ders Hazırlığı")
@@ -44,5 +44,6 @@ elif module == "essay_grader":
 
     essay_grader.render()
 else:
-    st.markdown(f"# {choice}")
-    st.info("Bu araç sırada.")
+    from tools import chatbot
+
+    chatbot.render()
